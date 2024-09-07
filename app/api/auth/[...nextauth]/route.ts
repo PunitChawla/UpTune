@@ -1,8 +1,7 @@
 import { prismaClient } from "@/app/lib/db";
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
-import { signIn, signOut} from "next-auth/react";
-import { NextResponse } from "next/server";
+
 
 
 const handler = NextAuth({

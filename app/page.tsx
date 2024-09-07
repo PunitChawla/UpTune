@@ -18,9 +18,10 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
                   Let Your Fans Drive the Beat
-                </h1>
+                  </h1>
+
                 <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   StreamTune: Where creators and fans collaborate to create the ultimate music streaming experience.
                 </p>
@@ -49,12 +50,12 @@ export default function LandingPage() {
               <div className="flex flex-col items-center text-center">
                 <Play className="h-12 w-12 mb-4 text-purple-500" />
                 <h3 className="text-xl font-bold mb-2">Fan-Driven Playlists</h3>
-                <p className="text-gray-400">Let your audience choose the tracks and shape your stream's soundtrack.</p>
+                <p className="text-gray-400">Let your audience choose the tracks and shape your stream s soundtrack</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <Users className="h-12 w-12 mb-4 text-purple-500" />
                 <h3 className="text-xl font-bold mb-2">Interactive Streaming</h3>
-                <p className="text-gray-400">Engage with your audience in real-time through chat and music requests.</p>
+                <p className="text-gray-400">Engage with your audience in real-time through chat and music requests</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <Headphones className="h-12 w-12 mb-4 text-purple-500" />

@@ -12,7 +12,7 @@ import { Appbar } from '../components/Appbar'
 
 //@ts-ignore
 import YouTubePlayer  from 'youtube-player'
-import VideoPlayer from './VideoPlayer'
+
 const getYouTubeId = (url: string) => {
   const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/)
   return match ? match[1] : null

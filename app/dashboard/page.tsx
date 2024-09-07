@@ -45,7 +45,7 @@ export default function Dashboard() {
   }
 
   // If there is no session or no user id, prompt the user to log in
-  if (!session || !session.user?.id) {
+  if (!session || !session.user.id ) {
     return <h1>Please Log in....</h1>;
   }
 
