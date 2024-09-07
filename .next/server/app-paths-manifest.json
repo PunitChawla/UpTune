@@ -1,13 +1,6 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/api/streams/next/route": "app/api/streams/next/route.js",
-  "/api/streams/route": "app/api/streams/route.js",
-  "/api/streams/my/route": "app/api/streams/my/route.js",
-  "/api/streams/downvote/route": "app/api/streams/downvote/route.js",
-  "/api/streams/upvote/route": "app/api/streams/upvote/route.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/creator/[creatorId]/page": "app/creator/[creatorId]/page.js",
+  "/page": "app/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/page": "app/page.js"
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
 }
