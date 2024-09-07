@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  provider Provider
+  streams  Stream[]  @relation("user")
+  upvote   Upvote[]
+  // added    Stream[]    @relation("addedBy")
+}
+
+model Stream {
+  id   String     @id @default(uuid())
+  type Streamtype
+  active      Boolean  @default(true)
+  url         String
+  extractedId String
+  title       String   @default("")
+  smallImg    String   @default("")
+  bigImg      String   @default("")
+  played      Boolean  @default(false)
+  playedTs    DateTime  @default(now())
+  createAt     DateTime  @default(now()) 
+  upvote      Upvote[]
+  userId      String
+  // addedbyid   String     
+  user        User     @relation(fields: [userId], references: [id], name: "user")
+  // addedBy      User    @relation(fields: [addedbyid], references: [id], name: "addedBy")
+  currentStrem  currentStream?
+}
+
+model currentStream{
+  userId     String    @id
+  streamId   String    @unique
+  stream     Stream?   @relation(fields: [ streamId], references: [id])
+}
+model Upvote {
+  id       String @id @default(uuid())
+  userId   String
+  streamId String
+  user     User   @relation(fields: [userId], references: [id])
+  stream   Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  // means 1 userid or streamid ke liye 1 vote hi hoga nhi to ek user ek song ko 50 baar vote kar dega 
+
+  @@unique([userId, streamId])
+}
+
+enum Provider {
+  Google
+}
+
+enum Streamtype {
+  Spotify
+  Youtube
+}
