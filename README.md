@@ -1,6 +1,54 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Uptune
+
+**Uptune** is a collaborative music player app built using Next.js. It allows multiple users to vote on and play music tracks, making it an ideal solution for parties, clubs, and other social events. The app integrates YouTube for video playback, allowing users to easily search for and queue music videos, with the most-voted tracks played automatically.
+
+## Features
+
+- **Collaborative Music Queue**: Users can vote on music, and the most popular tracks are played in order.
+- **YouTube Integration**: Search and play YouTube videos seamlessly within the app.
+- **Real-time Updates**: Ensure the music playlist is always up-to-date with user votes.
+- **Authentication**: Secure login with Google using NextAuth.
+- **Notifications**: User-friendly notifications via React Toastify.
+
+## Tech Stack
+
+### Core Technologies
+
+- **Next.js**: Fast and scalable React framework.
+- **Prisma**: ORM for managing and interacting with the database.
+- **NextAuth**: Authentication solution, supporting Google OAuth.
+- **React**: JavaScript library for building user interfaces.
+- **Tailwind CSS**: Utility-first CSS framework for styling.
+- **YouTube APIs**: Fetch and play YouTube videos using `youtube-player` and `youtube-search-api`.
+
+### Other Dependencies
+
+- **Axios**: For making API requests.
+- **Zod**: Schema validation for forms and data.
+- **Radix UI**: For UI primitives, utilizing the `react-slot` component.
+- **Lucide React**: Icons for UI elements.
+- **Class Variance Authority**: Tailwind utility for component variance.
+
+### Dev Tools
+
+- **TypeScript**: Strong typing for better code management.
+- **ESLint**: Linting for maintaining code quality.
+- **PostCSS**: CSS post-processing for optimization.
+- **Tailwind CSS Animate**: Custom animations for UI enhancements.
 
 ## Getting Started
+
+### Prerequisites
+
+- **Node.js** (v14 or higher)
+- **Yarn** or **npm**
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/uptune.git
+   cd uptune
 
 First, run the development server:
 
@@ -15,22 +63,3 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
