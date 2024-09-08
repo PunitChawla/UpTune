@@ -3,7 +3,7 @@
 **Uptune** is a collaborative music player app built using Next.js. It allows multiple users to vote on and play music tracks, making it an ideal solution for parties, clubs, and other social events. The app integrates YouTube for video playback, allowing users to easily search for and queue music videos, with the most-voted tracks played automatically.
 ## Video Demo
 
-[![Uptune Video Demo](/app/PreviewMelody.png)](https://drive.google.com/file/d/1DhOD_-2sElBtbkw7RLH3Y_PIn4wEMdIk/view?usp=drive_link)
+[![Uptune Video Demo](https://drive.google.com/file/d/1N35O6HmQYhkUh5tE9tXNNseuzKYN0D65/view?usp=drive_link)](https://drive.google.com/file/d/1DhOD_-2sElBtbkw7RLH3Y_PIn4wEMdIk/view?usp=drive_link)
 ## Features
 
 - **Collaborative Music Queue**: Users can vote on music, and the most popular tracks are played in order.
