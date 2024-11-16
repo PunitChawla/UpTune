@@ -7,8 +7,13 @@ import { useEffect } from "react";
 export function Redirect(){
     const session = useSession();
     const router = useRouter();
-    useEffect(()=>{
+    setTimeout(() => {
+        
+    }, 2000);
+    useEffect( ()=>{
+        
         if(session?.data?.user){
+            
             router.push("/dashboard")
         }
     },[session, router])

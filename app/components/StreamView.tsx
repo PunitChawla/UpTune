@@ -57,7 +57,8 @@ async function refreshStream(){
   console.log(creatorId)
   if (res.ok) {
     const data = await res.json(); // Parse the JSON response
-    
+    console.log(data);
+  
     // Accessing the streams array
     const streams = data.streams;
     //@ts-ignore
@@ -75,13 +76,16 @@ async function refreshStream(){
         { streamId, id, title, votes: upvotes , haveUpvote,bigImg,extractedId, url},
       ]);
     });
-    setCurrentlyPlaying(data.activeStream)
-    // setCurrentlyPlaying(queue[0])
+    console.log("active stream");
+    console.log(data.activeStream)
+    setCurrentlyPlaying(queue[0])
+    // currentlyPlaying?.extractedId = getYouTubeId(data.activeStream.url); 
   }
 }
 
-  useEffect(()=>{
-    refreshStream();
+useEffect(()=>{
+  refreshStream();
+
     const inteval = setInterval(() => {
       
     },);
@@ -101,10 +105,14 @@ async function refreshStream(){
     player.on('stateChange',(event)=>{
         console.log(event.data)
     })
+    
+
   },[currentlyPlaying , videoPlayerRef])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputUrl(e.target.value)
     const id = getYouTubeId(e.target.value)
+ 
     setPreviewId(id)
   }
 
@@ -126,7 +134,7 @@ async function refreshStream(){
         {
             const data =  await res.json()
             const title = data.title;
-            setQueue([...queue, {  id, title   , votes: 0 , haveUpvote : false},])
+            setQueue([...queue, {  id, title, votes: 0 , haveUpvote : false},])
         }
         // refreshStream();
         setLoding(false)
@@ -162,6 +170,7 @@ async function refreshStream(){
   
 
   const  playnext = async()=>{
+
     if(queue.length >0)
     {
         setPlaynextloader(true);
@@ -171,11 +180,14 @@ async function refreshStream(){
        if(data.ok)
        {
            const json = await data.json();
+           console.log(json);
        }
         setCurrentlyPlaying(queue[0]);
         setQueue(queue.slice(1));
+        
     }   
     setPlaynextloader(false)
+    
   }
   const handleShare = () => {
     if (currentlyPlaying) {
@@ -210,9 +222,7 @@ async function refreshStream(){
   return (
       
       <div className="w-full min-h-screen py-12 md:py-24 lg:py-5 xl:py-5 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100">
-      <Appbar></Appbar>
-
-    
+      <Appbar></Appbar>    
       
       <div className="max-w-4xl mx-auto p-4 space-y-8">
         <div className="space-y-4">
@@ -325,3 +335,4 @@ async function refreshStream(){
 }
 
 // https://www.youtube.com/watch?v=0pWsCiBvLOk
+// https://www.youtube.com/watch?v=JGwWNGJdvx8

@@ -27,10 +27,9 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
-                <form className="flex space-x-2">
-                  <Input className="bg-gray-800 border-gray-700 text-white placeholder-gray-400" placeholder="Enter your email" type="email" />
-                  <Button className="bg-purple-600 text-white hover:bg-purple-700">
-                    Get Started
+                <form className="flex space-x-2 justify-center">
+                  <Button  className="bg-purple-600 text-white hover:bg-purple-700">
+                    Get Started 
                   </Button>
                 </form>
                 <p className="text-xs text-gray-400">

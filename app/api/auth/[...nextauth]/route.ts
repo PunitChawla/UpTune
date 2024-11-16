@@ -3,7 +3,6 @@ import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 
 
-
 const handler = NextAuth({
     providers:[
         GoogleProvider({
@@ -28,6 +27,7 @@ const handler = NextAuth({
                 user:{
                     id : dbuser.id,
                     email : dbuser.email
+                  
                 }
             }
           },
@@ -52,7 +52,6 @@ const handler = NextAuth({
         },
     }
 })
-
 export { handler as GET, handler as POST }
 // export const  GET = handler;
 // export const  POST = handler;
