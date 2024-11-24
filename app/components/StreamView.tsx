@@ -91,7 +91,6 @@ useEffect(()=>{
     },);
   },[REFRESH_INTERVAL_MS])
 
-
   useEffect(()=>{
     if(!videoPlayerRef){
         console.log("not done")
@@ -105,7 +104,6 @@ useEffect(()=>{
     player.on('stateChange',(event)=>{
         console.log(event.data)
     })
-    
 
   },[currentlyPlaying , videoPlayerRef])
 
@@ -330,9 +328,8 @@ useEffect(()=>{
       </div>
       <ToastContainer />
     </div>
-
   )
 }
 
 // https://www.youtube.com/watch?v=0pWsCiBvLOk
-// https://www.youtube.com/watch?v=JGwWNGJdvx8
+// https://www.youtube.com/watch?v=JGwWNGJdv

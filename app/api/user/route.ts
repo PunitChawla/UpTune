@@ -8,7 +8,7 @@ export async function  POST(req : NextRequest) {
 
     
     const session = await getServerSession();
-    console.log(session);
+  
     const user = await prismaClient.user.findFirst({
         where:{
             email : session?.user?.email??  ""
@@ -18,7 +18,7 @@ export async function  POST(req : NextRequest) {
     if(!user)
     {
         return NextResponse.json({
-            msg : "Unauthenticated"
+            msg : session
         },{
             status : 403
         })

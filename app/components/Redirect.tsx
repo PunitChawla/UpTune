@@ -13,7 +13,7 @@ export function Redirect(){
     useEffect( ()=>{
         
         if(session?.data?.user){
-            
+            console.log(session.data.user);
             router.push("/dashboard")
         }
     },[session, router])

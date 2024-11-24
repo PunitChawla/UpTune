@@ -28,9 +28,9 @@ export default function LandingPage() {
               </div>
               <div className="w-full max-w-sm space-y-2">
                 <form className="flex space-x-2 justify-center">
-                  <Button  className="bg-purple-600 text-white hover:bg-purple-700">
+                  <Link   className="inline-flex h-10 items-center justify-center rounded-md bg-purple-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-700 disabled:pointer-events-none disabled:opacity-50" href="/api/auth/signin">
                     Get Started 
-                  </Button>
+                  </Link>
                 </form>
                 <p className="text-xs text-gray-400">
                   By signing up, you agree to our{" "}
@@ -86,7 +86,7 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Link
                     className="inline-flex h-10 items-center justify-center rounded-md bg-purple-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-700 disabled:pointer-events-none disabled:opacity-50"
-                    href="#"
+                    href="/api/auth/signin"
                   >
                     Start Streaming
                   </Link>
