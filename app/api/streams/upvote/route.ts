@@ -44,7 +44,7 @@ export async function  POST(req : NextRequest) {
             }
         });
         return NextResponse.json({
-            mes : "Done!"
+            msg : "Done!"
         })
     } catch (error) {
         return NextResponse.json({
