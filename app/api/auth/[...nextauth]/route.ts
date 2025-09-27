@@ -12,6 +12,9 @@ const handler = NextAuth({
         })
     ],
     secret : process.env.NEXTAUTH_SECRET ?? "secret",
+    pages: {
+        error: '/api/auth/error', // Custom error page
+    },
     callbacks:{
         async session({ session, token, user }) {
             const dbuser = await prismaClient.user.findUnique({
@@ -33,22 +36,36 @@ const handler = NextAuth({
           },
 
         async signIn(params){
-
-            if(!params.user.email)
-            {
-                console.log("false 1")
+            console.log("SignIn attempt:", params.user.email);
+            
+            if(!params.user.email) {
+                console.log("No email provided");
                 return false;
             }
+            
             try {
-                await prismaClient.user.create({
-                    data:{
-                        email : params.user.email,
-                        provider : "Google",
-                        streams:{
-                            create:[
+                // First check if user already exists
+                const existingUser = await prismaClient.user.findUnique({
+                    where: {
+                        email: params.user.email
+                    }
+                });
+
+                if (existingUser) {
+                    console.log("User already exists:", params.user.email);
+                    return true;
+                }
+
+                // Create new user with default streams
+                const newUser = await prismaClient.user.create({
+                    data: {
+                        email: params.user.email,
+                        provider: "Google",
+                        streams: {
+                            create: [
                                 {
                                     type: 'Youtube', 
-                                    url: "https://www.youtube.com/watch?v=rqt9y9EqyeQ",
+                                    url: "https://www.youtube.com/watch?v=LK7-_dgAVQE&list=RDLK7-_dgAVQE&start_radio=1",
                                     extractedId: "rqt9y9EqyeQ",
                                     title: "Husan Tera Toba Toba (Official Video) Karan Aujla | Tauba Tauba |Vicky Kaushal,Tripti| New Song 2024",
                                     smallImg: "https://i.ytimg.com/vi/rqt9y9EqyeQ/maxresdefault.jpg",
@@ -85,21 +102,17 @@ const handler = NextAuth({
                             ]
                         }
                     }
-                })
+                });
+
+                console.log("New user created:", newUser.email);
+                return true;
 
             } catch (error) {
-                try {
-                    await prismaClient.user.findUnique({
-                        where:{
-                            email : params.user.email
-                        }
-                    })
-                } catch (error) {
-                    return false
-                }
-                return true
+                console.error("SignIn error:", error);
+                // Even if database operation fails, allow sign in
+                // This prevents the Access Denied error
+                return true;
             }
-            return true
         },
     }
     

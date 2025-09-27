@@ -8,8 +8,26 @@ import { NextRequest, NextResponse } from "next/server";
 import  youtubesearchapi  from "youtube-search-api";
 import { z} from "zod"
 
-const YT_REGEX = new RegExp("^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%\?]{11})")
+const YT_REGEX = new RegExp("^(https?:\/\/)?(www\.)?(youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})")
 
+// Function to extract YouTube video ID from various URL formats
+const extractYouTubeId = (url: string): string | null => {
+  const patterns = [
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,  // Standard watch URLs
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,     // Embed URLs
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,         // /v/ URLs
+    /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/               // Short URLs
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  
+  return null;
+};
 
 const CreateStreamSchema = z.object({
     creatorId : z.string(),
@@ -17,19 +35,24 @@ const CreateStreamSchema = z.object({
 })
 export async function POST(req : NextRequest){
     try {
-        const body =   CreateStreamSchema.parse(await req.json())
+        const rawBody = await req.json();
+        console.log("Raw request body:", rawBody);
+        
+        const body = CreateStreamSchema.parse(rawBody);
+        console.log("Parsed body:", body);
+        console.log("Received URL:", body.url);
+        console.log("Creator ID:", body.creatorId);
 
-        const isYt = YT_REGEX.test(body.url)
-        if(!isYt)
-        {
+        const extractedId = extractYouTubeId(body.url);
+        console.log("Extracted ID:", extractedId);
+        
+        if (!extractedId) {
             return NextResponse.json({
-                msg : "wrong yt url "
-            },{
-                status : 411
-            })
+                msg: "Invalid YouTube URL or could not extract video ID"
+            }, {
+                status: 411
+            });
         }
-
-        const extractedId = body.url.split("?v=")[1];
 
      const res = await   youtubesearchapi.GetVideoDetails(extractedId)
      console.log(res.title)
@@ -54,10 +77,12 @@ export async function POST(req : NextRequest){
             title : stream.title
         })
     } catch (error) {
+        console.error("Error in POST /api/streams:", error);
         return NextResponse.json({
-            msg : "wrong input"
+            msg : "Internal server error",
+            error: error instanceof Error ? error.message : 'Unknown error'
         },{
-            status:411
+            status: 500
         })
     }
 }

@@ -24,7 +24,7 @@ export async function  POST(req : NextRequest) {
         })
     }
 
-    else{
+    else{   
         NextResponse.json({
             user
         })

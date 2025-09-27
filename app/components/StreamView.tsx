@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -14,8 +14,22 @@ import { Appbar } from '../components/Appbar'
 import YouTubePlayer  from 'youtube-player'
 
 const getYouTubeId = (url: string) => {
-  const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/)
-  return match ? match[1] : null
+  // Handle different YouTube URL formats and extract the 11-character video ID
+  const patterns = [
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,  // Standard watch URLs
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,     // Embed URLs
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,         // /v/ URLs
+    /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/               // Short URLs
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  
+  return null;
   // return the specific id or any yt url (hOHKltAiKXQ)
 }
 type Video = {
@@ -44,52 +58,87 @@ export default function StreamView({
   const [playnextloader , setPlaynextloader] = useState(false)
   const [loading , setLoding] = useState(false)
   const videoPlayerRef = useRef();
-  let hasFetched = false; // Flag to prevent duplicate fetches
-async function refreshStream(){
-  if(hasFetched== true)
-  {
-    return
-  }
-  hasFetched = true
-  const res =  await fetch(`/api/streams/?creatorId=${creatorId}`,{
-    credentials : "include"
-  });
-  console.log(creatorId)
-  if (res.ok) {
-    const data = await res.json(); // Parse the JSON response
-    console.log(data);
-  
-    // Accessing the streams array
-    const streams = data.streams;
-    //@ts-ignore
-    streams.forEach(stream => {
-      const id = getYouTubeId(stream.url) || ""
-      const title = stream.title;
-    const upvotes = stream.upvote;
-    const streamId = stream.id;
-    const haveUpvote = stream.haveUpvote; 
-    const bigImg = stream.bigImg;
-    const extractedId = stream.extractedId;
-    const url = stream.url
-      setQueue(prevQueue => [
-        ...prevQueue,
-        { streamId, id, title, votes: upvotes , haveUpvote,bigImg,extractedId, url},
-      ]);
-    });
-    console.log("active stream");
-    console.log(data.activeStream)
-    setCurrentlyPlaying(queue[0])
-    // currentlyPlaying?.extractedId = getYouTubeId(data.activeStream.url); 
-  }
-}
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  const refreshStream = useCallback(async (forceRefresh = false) => {
+    if(!forceRefresh && hasInitialized) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/streams/?creatorId=${creatorId}`,{
+        credentials : "include"
+      });
+      console.log("Creator ID:", creatorId)
+      
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Refresh stream data:", data);
+      
+        // Clear and rebuild the queue with fresh data
+        const newQueue: Video[] = [];
+        const streams = data.streams;
+        
+        streams.forEach((stream: any) => {
+          if(!stream.played) { // Only add unplayed streams to queue
+            const id = getYouTubeId(stream.url) || ""
+            const title = stream.title;
+            const upvotes = stream._count?.upvote || stream.upvote || 0;
+            const streamId = stream.id;
+            const haveUpvote = stream.haveUpvote || false; 
+            const bigImg = stream.bigImg;
+            const extractedId = stream.extractedId;
+            const url = stream.url;
+            
+            newQueue.push({
+              streamId, 
+              id, 
+              title, 
+              votes: upvotes, 
+              haveUpvote,
+              bigImg,
+              extractedId, 
+              url
+            });
+          }
+        });
+        
+        // Sort by votes (descending)
+        newQueue.sort((a, b) => b.votes - a.votes);
+        setQueue(newQueue);
+        
+        console.log("Active stream:", data.activeStream);
+        
+        // Set currently playing from active stream if available
+        if(data.activeStream && data.activeStream.stream) {
+          const activeStream = data.activeStream.stream;
+          const currentVideo = {
+            streamId: activeStream.id,
+            id: activeStream.extractedId,
+            title: activeStream.title,
+            votes: 0,
+            haveUpvote: false,
+            bigImg: activeStream.bigImg,
+            extractedId: activeStream.extractedId,
+            url: activeStream.url
+          };
+          setCurrentlyPlaying(currentVideo);
+        } else if(newQueue.length > 0) {
+          setCurrentlyPlaying(newQueue[0]);
+        }
+        
+        if(!hasInitialized) {
+          setHasInitialized(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing stream:", error);
+    }
+  }, [creatorId, hasInitialized]);
 
 useEffect(()=>{
   refreshStream();
-
-    const inteval = setInterval(() => {
-      
-    },);
-  },[REFRESH_INTERVAL_MS])
+  },[creatorId, refreshStream])
 
   useEffect(()=>{
     if(!videoPlayerRef){
@@ -118,11 +167,17 @@ useEffect(()=>{
        setInputUrl('')
         setPreviewId(null)
     const id = getYouTubeId(inputUrl)
+    console.log("Client-side - Input URL:", inputUrl);
+    console.log("Client-side - Extracted ID:", id);
+    
     if (id) {
         setLoding(true);
         
        const res = await fetch('/api/streams', {
             method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
                 creatorId : creatorId,
                 url : inputUrl
@@ -133,10 +188,25 @@ useEffect(()=>{
             const data =  await res.json()
             const title = data.title;
             setQueue([...queue, {  id, title, votes: 0 , haveUpvote : false},])
+        } else {
+            const errorData = await res.json();
+            console.error("Failed to add song:", res.status, errorData);
+            // Show error to user
+            toast.error(`Failed to add song: ${errorData.msg || 'Unknown error'}`, {
+                position: "top-right",
+                autoClose: 3000,
+            });
         }
-        // refreshStream();
+        // Force refresh to get the latest queue state from the server
+        await refreshStream(true);
         setLoding(false)
         
+    } else {
+        console.error("Failed to extract YouTube ID from URL:", inputUrl);
+        toast.error("Invalid YouTube URL. Please check the URL and try again.", {
+            position: "top-right",
+            autoClose: 3000,
+        });
     }
   }
 
@@ -172,17 +242,70 @@ useEffect(()=>{
     if(queue.length >0)
     {
         setPlaynextloader(true);
-        const data = await fetch('/api/streams/next',{
-        method :"GET"
-       })
-       if(data.ok)
-       {
-           const json = await data.json();
-           console.log(json);
-       }
-        setCurrentlyPlaying(queue[0]);
-        setQueue(queue.slice(1));
-        
+        try {
+            const data = await fetch('/api/streams/next',{
+                method :"GET"
+            })
+            if(data.ok)
+            {
+                const json = await data.json();
+                console.log("Play next response:", json);
+                
+                // Update the currently playing with the active stream from server
+                if(json.activeStream && json.activeStream.stream) {
+                    const activeStream = json.activeStream.stream;
+                    const activeVideo = {
+                        streamId: activeStream.id,
+                        id: activeStream.extractedId,
+                        title: activeStream.title,
+                        votes: 0,
+                        haveUpvote: false,
+                        bigImg: activeStream.bigImg,
+                        extractedId: activeStream.extractedId,
+                        url: activeStream.url
+                    };
+                    setCurrentlyPlaying(activeVideo);
+                }
+                
+                // Update the queue with fresh data from server (excluding played songs)
+                const updatedQueue: Video[] = [];
+                json.streams.forEach((stream: any) => {
+                    if(!stream.played) {
+                        const id = getYouTubeId(stream.url) || "";
+                        const title = stream.title;
+                        const upvotes = stream._count?.upvote || stream.upvote || 0;
+                        const streamId = stream.id;
+                        const haveUpvote = stream.haveUpvoted || false;
+                        const bigImg = stream.bigImg;
+                        const extractedId = stream.extractedId;
+                        const url = stream.url;
+                        
+                        updatedQueue.push({
+                            streamId, 
+                            id, 
+                            title, 
+                            votes: upvotes, 
+                            haveUpvote,
+                            bigImg,
+                            extractedId, 
+                            url
+                        });
+                    }
+                });
+                
+                // Sort by votes (descending)
+                updatedQueue.sort((a, b) => b.votes - a.votes);
+                setQueue(updatedQueue);
+                
+                // Force refresh the stream data to get the latest state
+                await refreshStream(true);
+                
+            } else {
+                console.error("Failed to play next song");
+            }
+        } catch (error) {
+            console.error("Error playing next song:", error);
+        }
     }   
     setPlaynextloader(false)
     
